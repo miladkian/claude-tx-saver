@@ -1,4 +1,0 @@
-FROM claude-tx-saver:test
-RUN apt-get update -qq && apt-get install -y -qq curl openssl && rm -rf /var/lib/apt/lists/*
-COPY bootstrap_container.py /test_bootstrap.py
-ENTRYPOINT ["python", "/test_bootstrap.py"]

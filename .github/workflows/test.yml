@@ -5,40 +5,13 @@ on:
 permissions:
   contents: read
 jobs:
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        python: ['3.10', '3.12', '3.14']
-        include:
-          - os: macos-latest
-            python: '3.12'
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-          cache: pip
-      - run: python -m pip install .
-      - run: python -m unittest discover -v
-      - name: Check installed CLI outside checkout
-        working-directory: ${{ runner.temp }}
-        run: claude-tx-saver --help
-      - name: Check installer syntax
-        run: bash -n server.sh client.sh
-
-  docker:
+  rust:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo fmt --check
+      - run: cargo test --all-targets
+      - run: cargo build --release
+      - run: target/release/claude-tx-saver --help
       - run: docker build -t claude-tx-saver:test .
-      - run: python -m unittest test_docker -v
-        env:
-          RUN_DOCKER_TESTS: '1'
-      - run: docker build -f tests/Dockerfile.bootstrap -t claude-tx-saver:bootstrap-test tests
-      - run: docker run --rm -v "$PWD:/source:ro" claude-tx-saver:bootstrap-test

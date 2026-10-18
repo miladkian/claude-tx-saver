@@ -25,8 +25,8 @@ installers below configure TLS, credentials, and Claude Code settings around it.
 **1. On your Linux VPS, as root:**
 
 ```sh
-curl -fsSLO https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/server.sh
-bash server.sh
+curl -fsSL https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/claude-tx-saver-linux-x86_64.tar.gz | tar xz
+install -m 755 claude-tx-saver /usr/local/bin/claude-tx-saver
 ```
 
 The server detects its public IPv4, creates a self-signed certificate, and prints
@@ -34,15 +34,9 @@ the next command. No domain, certificate purchase, or TLS setup is needed.
 
 **2. On your Mac or Linux machine:**
 
-```sh
-curl -fsSLO https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/client.sh
-bash client.sh YOUR_VPS_IP
-claude
-```
+Use the release binary on the client and start it with `client --relay https://YOUR_VPS_IP:8443/v1/relay --token-file TOKEN --relay-ca relay.crt --port 8787`. Configure Claude Code to use `http://127.0.0.1:8787`.
 
-The client uses SSH once to copy the private relay credentials. Normal traffic
-then uses authenticated HTTPS; there is no SSH tunnel. Restart any Claude Code
-session that was already open.
+The client uses authenticated HTTPS; there is no SSH tunnel. Restart any Claude Code session that was already open.
 
 For a source build, install Rust stable (1.90 or newer) and run `cargo build --release`.
 The resulting `target/release/claude-tx-saver` accepts the same `client` and
@@ -50,16 +44,13 @@ The resulting `target/release/claude-tx-saver` accepts the same `client` and
 
 ### Docker
 
-Use the same two commands with `--docker`:
+Build the Rust image and run the same binary modes. The server publishes HTTPS on
+port `8443`; the client listens on `127.0.0.1:8787`.
 
 ```sh
-bash server.sh --docker
-bash client.sh --docker YOUR_VPS_IP
+docker build -t claude-tx-saver .
+docker run --rm claude-tx-saver --help
 ```
-
-Docker mode needs a running Docker daemon. The client is published only on
-`127.0.0.1:8787`; the server publishes HTTPS on port `8443`. Allow TCP 8443 in
-your VPS/cloud firewall.
 
 ## What changes on the wire?
 
@@ -92,27 +83,13 @@ Anthropic billing do not change.
 [Full report](benchmarks/results/REPORT.md) · [Methodology and reproduction](benchmarks/README.md)
 
 The benchmark harness is intentionally retained so Rust releases can be compared
-with the protocol baseline. Run `python3 benchmarks/run.py --help` for the
-available local and live scenarios.
+with the protocol baseline. Use `cargo bench` or the workload tools in your own benchmark harness for local and live scenarios.
 
 ## Updates and removal
 
-Both scripts remember the server address, credentials, install mode, and Claude
-settings. Update the server first, then the client:
-
-```sh
-claude-tx-server --update
-~/.local/bin/claude-tx-client --update
-```
-
-Remove the local service and restore the previous Claude URL:
-
-```sh
-bash client.sh --uninstall
-```
-
-Stop the server with `systemctl disable --now claude-proxy` or
-`docker rm -f claude-tx-saver-server`.
+Download the new tagged binary and replace the previous executable. Stop the
+server with `systemctl disable --now claude-proxy`. Remove the client process and
+restore Claude Code's previous base URL from its settings.
 
 ## Trust boundary
 

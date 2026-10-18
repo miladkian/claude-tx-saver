@@ -6,7 +6,6 @@
   "compression_baseline": "zstd-6",
   "started_at": "2026-10-18T01:00:19.985839+00:00",
   "finished_at": "2026-10-18T01:03:40.070116+00:00",
-  "python_version": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
   "aiohttp_version": "3.14.5",
   "context_utf8_bytes": 279355,
   "request_body_bytes": 290674,
