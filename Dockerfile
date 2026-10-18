@@ -1,8 +1,11 @@
-FROM python:3.12-slim
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-WORKDIR /app
-COPY --chmod=644 requirements.txt .
-RUN pip install --no-cache-dir --disable-pip-version-check -r requirements.txt
-COPY --chmod=644 proxy.py wire.py tx_config.py ./
-ENTRYPOINT ["python", "/app/proxy.py"]
+FROM rust:latest AS build
+WORKDIR /src
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+RUN cargo build --release
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=build /src/target/release/claude-tx-saver /usr/local/bin/claude-tx-saver
+ENTRYPOINT ["/usr/local/bin/claude-tx-saver"]
 CMD ["--help"]

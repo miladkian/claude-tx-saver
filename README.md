@@ -1,5 +1,9 @@
 # Claude TX Saver
 
+The relay is implemented in Rust for a small, self-contained deployment binary.
+The wire protocol remains version 3, so existing clients can be upgraded without
+changing credentials or the Claude Code integration.
+
 <p align="center"><strong>Stop uploading the same Claude Code context on every turn.</strong></p>
 <p align="center"><a href="https://github.com/mohsenyz/claude-tx-saver/actions/workflows/test.yml"><img src="https://github.com/mohsenyz/claude-tx-saver/actions/workflows/test.yml/badge.svg" alt="CI"></a> <a href="https://github.com/mohsenyz/claude-tx-saver/releases"><img src="https://img.shields.io/github/v/release/mohsenyz/claude-tx-saver?sort=semver" alt="Latest release"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a></p>
 
@@ -11,6 +15,12 @@ and lets Claude continue as normal.
 <p align="center"><img src="docs/architecture.svg" alt="Claude TX Saver architecture" width="900"></p>
 
 ## Quick start
+
+### Install a prebuilt release
+
+Release artifacts are published for Linux x86_64 and macOS Apple Silicon. The
+`claude-tx-saver` binary provides both `server` and `client` modes; the shell
+installers below configure TLS, credentials, and Claude Code settings around it.
 
 **1. On your Linux VPS, as root:**
 
@@ -33,6 +43,10 @@ claude
 The client uses SSH once to copy the private relay credentials. Normal traffic
 then uses authenticated HTTPS; there is no SSH tunnel. Restart any Claude Code
 session that was already open.
+
+For a source build, install Rust stable (1.90 or newer) and run `cargo build --release`.
+The resulting `target/release/claude-tx-saver` accepts the same `client` and
+`server` arguments documented by `--help`.
 
 ### Docker
 
@@ -76,6 +90,10 @@ about 48 ms. Live first-token timing showed no reliable speedup. Input tokens an
 Anthropic billing do not change.
 
 [Full report](benchmarks/results/REPORT.md) · [Methodology and reproduction](benchmarks/README.md)
+
+The benchmark harness is intentionally retained so Rust releases can be compared
+with the protocol baseline. Run `python3 benchmarks/run.py --help` for the
+available local and live scenarios.
 
 ## Updates and removal
 
