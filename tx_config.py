@@ -25,5 +25,5 @@ def configured_relay():
     if not value and path.exists():
         value = path.read_text().strip()
     if not value:
-        raise ValueError("set --relay, CLAUDE_TX_RELAY, or run deploy.py --host YOUR_VPS_IP first")
+        raise ValueError("set --relay, CLAUDE_TX_RELAY, or run client.sh YOUR_VPS_IP first")
     return validate_relay(value)

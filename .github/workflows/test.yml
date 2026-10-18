@@ -27,4 +27,18 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: claude-tx-saver --help
       - name: Check installer syntax
-        run: sh -n install.sh client.sh claude-via-proxy.sh
+        run: bash -n server.sh client.sh
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: docker build -t claude-tx-saver:test .
+      - run: python -m unittest test_docker -v
+        env:
+          RUN_DOCKER_TESTS: '1'
+      - run: docker build -f tests/Dockerfile.bootstrap -t claude-tx-saver:bootstrap-test tests
+      - run: docker run --rm -v "$PWD:/source:ro" claude-tx-saver:bootstrap-test

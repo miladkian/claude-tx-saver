@@ -94,5 +94,41 @@ class InstallTests(unittest.TestCase):
             systemd_unit(['bad\ncommand'], '/tmp')
 
 
+class DockerInstallTests(unittest.TestCase):
+    def test_docker_install_binds_only_loopback_and_uninstall_restores_settings(self):
+        from install_client import main
+        from unittest.mock import MagicMock
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            state = home / 'config' / 'claude-proxy'
+            state.mkdir(parents=True)
+            (state / 'relay-url').write_text('https://relay.example:8443/v1/relay')
+            (state / 'token').write_text('test-' + 'a' * 64)
+            (state / 'relay.crt').write_text('test fixture; not used by mocked readiness')
+            (home / '.claude').mkdir()
+            settings = home / '.claude' / 'settings.json'
+            settings.write_text('{"env":{"ANTHROPIC_BASE_URL":"https://old.example","OTHER":"keep"}}')
+            with patch.dict(os.environ, {'XDG_CONFIG_HOME': str(home / 'config')}, clear=True), \
+                 patch('install_client.Path.home', return_value=home), \
+                 patch('install_client.platform.system', return_value='Linux'), \
+                 patch('install_client.subprocess.run') as run, \
+                 patch('install_client.socket.create_connection', return_value=MagicMock()), \
+                 patch('sys.argv', ['install_client.py', '--docker', '--image', 'test-image']):
+                main()
+                arguments = next(call.args[0] for call in run.call_args_list if call.args[0][:2] == ['docker', 'run'])
+                self.assertIn('127.0.0.1:8787:8787', arguments)
+                self.assertIn('--read-only', arguments)
+                self.assertEqual(arguments[arguments.index('--cap-drop') + 1], 'ALL')
+                self.assertEqual(arguments[arguments.index('--listen') + 1], '0.0.0.0')
+                self.assertTrue(any(str(state) + ':/run/credentials:ro' == arg for arg in arguments))
+                self.assertEqual(json.loads(settings.read_text())['env']['ANTHROPIC_BASE_URL'], 'http://127.0.0.1:8787')
+                self.assertEqual((state / 'client-mode').read_text().strip(), 'docker')
+                with patch('sys.argv', ['install_client.py', '--uninstall']):
+                    main()
+                self.assertEqual(json.loads(settings.read_text())['env'], {'ANTHROPIC_BASE_URL': 'https://old.example', 'OTHER': 'keep'})
+                self.assertFalse((state / 'client-mode').exists())
+                run.assert_any_call(['docker', 'rm', '-f', 'claude-tx-saver-client'], check=True)
+
+
 if __name__ == '__main__':
     unittest.main()

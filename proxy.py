@@ -307,7 +307,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=["client", "server"])
     parser.add_argument("--port", type=int)
-    parser.add_argument("--listen", help="server bind address; client always uses loopback")
+    parser.add_argument("--listen", help="bind address (client defaults to loopback; containers use 0.0.0.0)")
     parser.add_argument("--token-file", required=True, type=Path)
     parser.add_argument("--cert", type=Path, help="server TLS certificate")
     parser.add_argument("--key", type=Path, help="server TLS private key")
@@ -337,8 +337,6 @@ def main():
         tls.load_cert_chain(args.cert, args.key)
         app = server_app(token, args.upstream, args.cache_mib * 1024 * 1024, **options)
     else:
-        if args.listen and args.listen != "127.0.0.1":
-            parser.error("client must bind to 127.0.0.1")
         try:
             args.relay = validate_relay(args.relay) if args.relay else configured_relay()
         except ValueError as error:
@@ -346,7 +344,7 @@ def main():
         relay_ssl = ssl.create_default_context(cafile=args.relay_ca)
         app = client_app(token, args.relay, args.stats, relay_ssl, **options)
     web.run_app(
-        app, host=(args.listen or "0.0.0.0") if args.mode == "server" else "127.0.0.1",
+        app, host=args.listen or ("0.0.0.0" if args.mode == "server" else "127.0.0.1"),
         port=args.port or (8787 if args.mode == "client" else 8443),
         access_log=None, handler_cancellation=True, ssl_context=tls,
     )

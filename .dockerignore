@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!requirements.txt
+!proxy.py
+!wire.py
+!tx_config.py

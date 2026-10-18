@@ -14,7 +14,7 @@ Private credentials live outside the checkout in `~/.config/claude-proxy/`
 (or `$XDG_CONFIG_HOME/claude-proxy/`) and `/etc/claude-proxy/`. Logs contain byte
 counts, not request bodies or headers. Context chunks are kept in a bounded
 in-memory cache, not on disk. Clients sharing a relay token share that cache;
-use separate deployments for mutually untrusted users. The loopback listener
+use separate deployments for mutually untrusted users. The client listener (loopback on the host)
 is not authenticated, so other processes/users on the client machine may use
 it. Secure both hosts and their local accounts accordingly.
 
@@ -28,3 +28,11 @@ To report a vulnerability, use this repository's GitHub private vulnerability
 reporting if available. Otherwise open an issue requesting a private contact
 without including exploit details, tokens, private keys, or request captures.
 No external security audit has been performed.
+
+The Docker image contains code and dependencies only. Installers mount credentials
+read-only, drop all Linux capabilities, set memory/PID limits, and use a read-only
+filesystem. The server container runs as root to read root-owned credential files;
+the client runs with the invoking user's UID/GID. Docker publishes the client port
+only on host loopback. Do not publish its unauthenticated listener publicly.
+The root-only `/etc/claude-proxy/client.json` is a credential export used for
+one-time SSH setup. Treat it like the relay token.

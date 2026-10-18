@@ -72,6 +72,8 @@ def main():
     parser.add_argument("--uninstall", action="store_true")
     parser.add_argument("--relay", help="override saved HTTPS relay URL")
     parser.add_argument("--port", type=int, default=8787)
+    parser.add_argument("--docker", action="store_true", help="run the client in Docker")
+    parser.add_argument("--image", default="claude-tx-saver:v0.2.0")
     args = parser.parse_args()
     system = platform.system()
     if system not in {"Darwin", "Linux"}:
@@ -86,8 +88,11 @@ def main():
     unit = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "systemd" / "user" / UNIT
     settings = Path.home() / ".claude" / "settings.json"
     previous = state / "previous-base-url.json"
+    mode = state / "client-mode"
     if args.uninstall:
-        if system == "Darwin":
+        if mode.exists() and mode.read_text().strip() == "docker":
+            subprocess.run(["docker", "rm", "-f", "claude-tx-saver-client"], check=True)
+        elif system == "Darwin":
             subprocess.run(["launchctl", "bootout", domain + "/" + LABEL], check=False, capture_output=True)
             plist.unlink(missing_ok=True)
         else:
@@ -95,6 +100,7 @@ def main():
             unit.unlink(missing_ok=True)
             subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
         restore_settings(settings, previous)
+        mode.unlink(missing_ok=True)
         print("Client removed; prior Claude base URL restored if it was still managed by this installer.")
         print("Relay service and private credentials are retained.")
         return
@@ -105,11 +111,28 @@ def main():
         parser.error(str(error))
     for path in [state / "token", state / "relay.crt"]:
         if not path.exists():
-            parser.error("required file missing: " + str(path) + "; run deploy.py first")
+            parser.error("required file missing: " + str(path) + "; run client.sh YOUR_VPS_IP first")
     arguments = [sys.executable, str(ROOT / "proxy.py"), "client", "--relay", relay,
                  "--port", str(args.port), "--token-file", str(state / "token"),
                  "--relay-ca", str(state / "relay.crt"), "--stats"]
-    if system == "Darwin":
+    if args.docker:
+        if system == "Darwin":
+            subprocess.run(["launchctl", "bootout", domain + "/" + LABEL], check=False, capture_output=True)
+            plist.unlink(missing_ok=True)
+        elif unit.exists():
+            subprocess.run(["systemctl", "--user", "disable", "--now", UNIT], check=True)
+            unit.unlink()
+            subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
+        subprocess.run(["docker", "rm", "-f", "claude-tx-saver-client"], check=False, capture_output=True)
+        subprocess.run(["docker", "run", "-d", "--name", "claude-tx-saver-client", "--restart", "unless-stopped",
+                        "--init", "--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+                        "--pids-limit", "64", "--memory", "1g", "--user", f"{os.getuid()}:{os.getgid()}",
+                        "-p", f"127.0.0.1:{args.port}:8787", "-v", f"{state}:/run/credentials:ro",
+                        args.image, "client", "--listen", "0.0.0.0", "--port", "8787", "--relay", relay,
+                        "--token-file", "/run/credentials/token", "--relay-ca", "/run/credentials/relay.crt", "--stats"], check=True)
+    elif system == "Darwin":
+        if mode.exists() and mode.read_text().strip() == "docker":
+            subprocess.run(["docker", "rm", "-f", "claude-tx-saver-client"], check=True)
         plist.parent.mkdir(parents=True, exist_ok=True)
         log = state / "client.log"
         log.touch(mode=0o600, exist_ok=True)
@@ -121,6 +144,8 @@ def main():
         subprocess.run(["launchctl", "bootout", domain + "/" + LABEL], check=False, capture_output=True)
         subprocess.run(["launchctl", "bootstrap", domain, str(plist)], check=True)
     else:
+        if mode.exists() and mode.read_text().strip() == "docker":
+            subprocess.run(["docker", "rm", "-f", "claude-tx-saver-client"], check=True)
         unit.parent.mkdir(parents=True, exist_ok=True)
         write_private(unit, systemd_unit(arguments, ROOT).encode())
         subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
@@ -147,8 +172,10 @@ def main():
     env["ANTHROPIC_BASE_URL"] = base_url
     settings.parent.mkdir(parents=True, exist_ok=True)
     write_private(settings, (json.dumps(current, indent=2) + "\n").encode())
+    write_private(mode, b"docker\n" if args.docker else b"native\n")
     print("Client service installed; new Claude Code sessions use " + base_url)
-    print("Logs: " + (str(state / "client.log") if system == "Darwin" else "journalctl --user -u " + UNIT))
+    print("Logs: " + ("docker logs claude-tx-saver-client" if args.docker else
+                      str(state / "client.log") if system == "Darwin" else "journalctl --user -u " + UNIT))
 
 
 if __name__ == "__main__":
