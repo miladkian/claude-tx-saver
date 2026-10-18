@@ -4,3 +4,7 @@
 !proxy.py
 !wire.py
 !tx_config.py
+!Cargo.toml
+!Cargo.lock
+!src/
+!src/**
