@@ -1,0 +1,174 @@
+{
+  "samples": [
+    {
+      "case": "cold",
+      "codec": "legacy-json-base64-deflate-3",
+      "bytes": 119285,
+      "encode_ms_median": 6.25322901760228
+    },
+    {
+      "case": "cold",
+      "codec": "binary-zstd-1",
+      "bytes": 75523,
+      "encode_ms_median": 0.7904170197434723
+    },
+    {
+      "case": "cold",
+      "codec": "binary-zstd-3",
+      "bytes": 70250,
+      "encode_ms_median": 0.7645829755347222
+    },
+    {
+      "case": "cold",
+      "codec": "binary-zstd-6",
+      "bytes": 63441,
+      "encode_ms_median": 2.93577101547271
+    },
+    {
+      "case": "cold",
+      "codec": "binary-zstd-9",
+      "bytes": 62050,
+      "encode_ms_median": 4.172374989138916
+    },
+    {
+      "case": "cold",
+      "codec": "binary-brotli-4",
+      "bytes": 67195,
+      "encode_ms_median": 2.7585205098148435
+    },
+    {
+      "case": "cold",
+      "codec": "binary-brotli-5",
+      "bytes": 62662,
+      "encode_ms_median": 4.658458521589637
+    },
+    {
+      "case": "cold",
+      "codec": "binary-brotli-6",
+      "bytes": 61506,
+      "encode_ms_median": 5.357271002139896
+    },
+    {
+      "case": "cold",
+      "codec": "binary-brotli-9",
+      "bytes": 59721,
+      "encode_ms_median": 8.336938015418127
+    },
+    {
+      "case": "unchanged",
+      "codec": "legacy-json-base64-deflate-3",
+      "bytes": 854,
+      "encode_ms_median": 0.024833017960190773
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-zstd-1",
+      "bytes": 858,
+      "encode_ms_median": 0.014833523891866207
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-zstd-3",
+      "bytes": 876,
+      "encode_ms_median": 0.01758296275511384
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-zstd-6",
+      "bytes": 869,
+      "encode_ms_median": 0.023500004317611456
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-zstd-9",
+      "bytes": 869,
+      "encode_ms_median": 0.03170798299834132
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-brotli-4",
+      "bytes": 818,
+      "encode_ms_median": 0.03604148514568806
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-brotli-5",
+      "bytes": 816,
+      "encode_ms_median": 0.04695798270404339
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-brotli-6",
+      "bytes": 816,
+      "encode_ms_median": 0.048645975766703486
+    },
+    {
+      "case": "unchanged",
+      "codec": "binary-brotli-9",
+      "bytes": 817,
+      "encode_ms_median": 0.07118747453205287
+    },
+    {
+      "case": "small_append",
+      "codec": "legacy-json-base64-deflate-3",
+      "bytes": 10600,
+      "encode_ms_median": 0.24356198264285922
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-zstd-1",
+      "bytes": 7578,
+      "encode_ms_median": 0.06508352817036211
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-zstd-3",
+      "bytes": 7257,
+      "encode_ms_median": 0.07158302469179034
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-zstd-6",
+      "bytes": 6838,
+      "encode_ms_median": 0.193687534192577
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-zstd-9",
+      "bytes": 6779,
+      "encode_ms_median": 0.3084585187025368
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-brotli-4",
+      "bytes": 6869,
+      "encode_ms_median": 0.19222902483306825
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-brotli-5",
+      "bytes": 6614,
+      "encode_ms_median": 0.31008399673737586
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-brotli-6",
+      "bytes": 6591,
+      "encode_ms_median": 0.3238334902562201
+    },
+    {
+      "case": "small_append",
+      "codec": "binary-brotli-9",
+      "bytes": 6544,
+      "encode_ms_median": 0.5320829804986715
+    }
+  ],
+  "context_sha256": "8c305fa2a24d12b8863c93224d85ec39f4c2698bad37e2c7885c2556d21eb461",
+  "context_reference_tokens": 59647,
+  "zstandard_version": "0.25.0",
+  "brotli_version": "1.2.0",
+  "notes": [
+    "Includes framing/JSON work but excludes chunk scanning shared by all codecs.",
+    "Brotli measurements omit the four-byte magic that a wire implementation would need."
+  ]
+}

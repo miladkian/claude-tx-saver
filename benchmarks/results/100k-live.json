@@ -1,0 +1,576 @@
+{
+  "samples": [
+    {
+      "phase": "routing-check",
+      "mode": "full",
+      "provider_context_tokens": 619,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 617,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 2704.255332995672,
+      "elapsed_ms": 2746.863625012338,
+      "api_duration_ms": 2367,
+      "api_cost_estimate_usd": 8.37e-06,
+      "upload_body_bytes": 8058,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "routing-check",
+      "mode": "delta",
+      "provider_context_tokens": 619,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 617,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 2820.9560419782065,
+      "elapsed_ms": 2857.563166995533,
+      "api_duration_ms": 2519,
+      "api_cost_estimate_usd": 8.37e-06,
+      "upload_body_bytes": 3294,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "warmup",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 3095.5936249811202,
+      "elapsed_ms": 3130.6765410117805,
+      "api_duration_ms": 2743,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "warmup",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 2032.6275420375168,
+      "elapsed_ms": 2068.6709580477327,
+      "api_duration_ms": 1679,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 66350,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 2236.2872079829685,
+      "elapsed_ms": 2273.068374954164,
+      "api_duration_ms": 1886,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 2154.7982079791836,
+      "elapsed_ms": 2181.375207961537,
+      "api_duration_ms": 1809,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 8844,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1855.7562080095522,
+      "elapsed_ms": 1879.9739580135792,
+      "api_duration_ms": 1523,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 8848,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1668.0733340326697,
+      "elapsed_ms": 1731.2683340278454,
+      "api_duration_ms": 1358,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1730.0680000334978,
+      "elapsed_ms": 1767.280833038967,
+      "api_duration_ms": 1395,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 2028.2565410016105,
+      "elapsed_ms": 2053.262415982317,
+      "api_duration_ms": 1674,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 8847,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1714.9674999527633,
+      "elapsed_ms": 1748.8303749705665,
+      "api_duration_ms": 1369,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 8847,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1516.5264580282383,
+      "elapsed_ms": 1552.4734170176089,
+      "api_duration_ms": 1174,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1776.0998330195434,
+      "elapsed_ms": 1814.1698330291547,
+      "api_duration_ms": 1431,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1574.0502499975264,
+      "elapsed_ms": 1612.0897089713253,
+      "api_duration_ms": 1231,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 8848,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "delta",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1900.6272500264458,
+      "elapsed_ms": 1927.3487500031479,
+      "api_duration_ms": 1556,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 8848,
+      "requests": 1,
+      "result": "OK"
+    },
+    {
+      "phase": "measured",
+      "mode": "full",
+      "provider_context_tokens": 100126,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 100124,
+        "output_tokens": 4,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "first_token_ms": 1814.3334579654038,
+      "elapsed_ms": 1854.9367079976946,
+      "api_duration_ms": 1482,
+      "api_cost_estimate_usd": 0.0050172,
+      "upload_body_bytes": 298506,
+      "requests": 1,
+      "result": "OK"
+    }
+  ],
+  "summary": {
+    "full": {
+      "upload_body_bytes": 298506.0,
+      "first_token_ms": 1753.0839165265206,
+      "elapsed_ms": 1790.725333034061,
+      "api_duration_ms": 1413.0,
+      "provider_context_tokens": 100126.0
+    },
+    "delta": {
+      "upload_body_bytes": 8847.5,
+      "first_token_ms": 1878.191729017999,
+      "elapsed_ms": 1903.6613540083636,
+      "api_duration_ms": 1539.5,
+      "provider_context_tokens": 100126.0
+    }
+  },
+  "transport_version": 3,
+  "compression": "zstd-6",
+  "context_reference_tokens": 59647,
+  "context_utf8_bytes": 279355,
+  "context_sha256": "8c305fa2a24d12b8863c93224d85ec39f4c2698bad37e2c7885c2556d21eb461",
+  "notes": [
+    "Actual Claude Code OAuth requests to Haiku through the same VPS for both modes.",
+    "Measured calls alternate order; sample count is recorded and inference timing remains variable.",
+    "First-token timing includes Claude Code process startup, auth, upload, prefill and inference.",
+    "Reported API cost is an estimate from Claude Code; existing Pro subscription auth was used.",
+    "Only generated fixture and public package source were used; credentials never written to results."
+  ]
+}

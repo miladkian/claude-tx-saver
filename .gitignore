@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.DS_Store
+.env
+.env.*
+*.log
+*.key
+*.pem
+*.crt
+token
+relay-url
+previous-base-url.json
