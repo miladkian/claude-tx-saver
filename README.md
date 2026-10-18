@@ -25,7 +25,7 @@ Next turn:    [same context + “fix it”] ── just changes ▶ VPS rebuilds
 
 ```sh
 curl -fsSLO https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/server.sh
-bash server.sh YOUR_VPS_IP
+bash server.sh
 ```
 
 **On your Mac or Linux machine** (with Claude Code + Python 3.10+ installed):
@@ -39,7 +39,7 @@ claude
 Prefer containers? Add **`--docker`** on both machines:
 
 ```sh
-bash server.sh --docker YOUR_VPS_IP   # VPS
+bash server.sh --docker   # VPS
 bash client.sh --docker YOUR_VPS_IP   # your machine
 ```
 
@@ -48,6 +48,10 @@ services. No clone, pip commands, or hand-edited config. Review the downloaded
 scripts before running. Docker mode builds the included [Dockerfile](Dockerfile);
 it needs a running Docker daemon, plus Python for setup.
 
+The server detects its public IPv4 and prints the client command. Override detection
+with `bash server.sh YOUR_VPS_IP` if needed (for example, behind NAT).
+**No domain, certificate purchase, or TLS configuration.** The scripts generate
+and trust a self-signed certificate automatically.
 Use a public **IPv4** address, working `root@IP` SSH access, and allow **TCP 8443**
 in your cloud firewall. Native mode uses systemd on the VPS and a LaunchAgent /
 systemd user service locally. SSH copies credentials during setup; **traffic uses

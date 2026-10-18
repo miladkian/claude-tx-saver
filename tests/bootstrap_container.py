@@ -32,6 +32,16 @@ def executable(name, code):
 
 executable('curl', '''#!/usr/bin/env python3
 import os,shutil,sys
+if os.environ.get('TEST_DETECTION'):
+ if 'https://api.ipify.org' in sys.argv:
+  print('invalid address')
+  sys.exit(0)
+ if 'https://checkip.amazonaws.com' in sys.argv:
+  print('93.184.216.34' if os.environ['TEST_DETECTION']=='success' else '192.168.1.1')
+  sys.exit(0)
+ if any('/tarball/' in arg for arg in sys.argv):
+  print('PUBLIC_IP_DETECTED_REACHED_DOWNLOAD',file=sys.stderr)
+  sys.exit(22)
 if any('/tarball/' in arg for arg in sys.argv):
  shutil.copy('/tmp/source.tar.gz',sys.argv[sys.argv.index('-o')+1])
 elif any('/releases/latest/download/' in arg for arg in sys.argv):
@@ -65,6 +75,13 @@ settings = Path.home() / '.claude/settings.json'
 settings.parent.mkdir()
 settings.write_text('{"env":{"CUSTOM":"keep","ANTHROPIC_BASE_URL":"https://old.example"}}')
 try:
+    # Exercise first-install detection and fallback, stopping before any install.
+    for mode in ['success', 'failure']:
+        probe = subprocess.run(['bash', str(source / 'server.sh')],
+                               env={**os.environ, 'TEST_DETECTION': mode}, capture_output=True, text=True)
+        assert probe.returncode != 0
+        expected = 'PUBLIC_IP_DETECTED_REACHED_DOWNLOAD' if mode == 'success' else 'Could not detect public IPv4'
+        assert expected in probe.stderr, (mode, probe.stdout, probe.stderr)
     subprocess.run(['bash', str(source / 'server.sh'), '127.0.0.1'], check=True)
     server = Path('/etc/claude-proxy')
     original_token = (server / 'token').read_bytes()
@@ -91,7 +108,8 @@ try:
     assert (state / 'client-mode').read_text().strip() == 'native'
     subprocess.run(['bash', str(source / 'client.sh'), '--uninstall'], check=True)
     assert json.loads(settings.read_text())['env'] == {'CUSTOM': 'keep', 'ANTHROPIC_BASE_URL': 'https://old.example'}
-    subprocess.run(['bash', str(source / 'server.sh'), '127.0.0.1'], check=True)
+    # No IP argument on reinstall: preserve the saved address, not a new lookup.
+    subprocess.run(['bash', str(source / 'server.sh')], check=True)
     assert (server / 'token').read_bytes() == original_token
     assert (server / 'relay.crt').read_bytes() == original_cert
     print('PASS: fresh server/client install, verified TLS/auth, private files, one-command updates, settings rollback')

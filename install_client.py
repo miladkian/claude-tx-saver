@@ -73,7 +73,7 @@ def main():
     parser.add_argument("--relay", help="override saved HTTPS relay URL")
     parser.add_argument("--port", type=int, default=8787)
     parser.add_argument("--docker", action="store_true", help="run the client in Docker")
-    parser.add_argument("--image", default="claude-tx-saver:v0.2.0")
+    parser.add_argument("--image", default="claude-tx-saver:v0.2.1")
     args = parser.parse_args()
     system = platform.system()
     if system not in {"Darwin", "Linux"}:

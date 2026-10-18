@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run on your Mac/Linux desktop: bash client.sh YOUR_VPS_IPV4
 set -euo pipefail
-VERSION=v0.2.0
+VERSION=v0.2.1
 REPO=mohsenyz/claude-tx-saver
 install_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude-tx-saver"
 state_dir="${XDG_CONFIG_HOME:-$HOME/.config}/claude-proxy"

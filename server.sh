@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Run on the VPS: bash server.sh YOUR_PUBLIC_IPV4
+# Run on the VPS: bash server.sh
 set -euo pipefail
-VERSION=v0.2.0
+VERSION=v0.2.1
 REPO=mohsenyz/claude-tx-saver
 docker_mode=false
 if [[ ${1:-} == --docker ]]; then docker_mode=true; shift; fi
@@ -20,8 +20,8 @@ if [[ ${1:-} == --update && $# == 1 ]]; then
     exit
 fi
 
-if [[ ${1:-} == --help || $# != 1 ]]; then
-    echo 'Usage: sudo bash server.sh [--docker] YOUR_PUBLIC_IPV4 | --update'
+if [[ ${1:-} == --help || $# -gt 1 || ${1:-} == --* ]]; then
+    echo 'Usage: sudo bash server.sh [--docker] [YOUR_PUBLIC_IPV4] | --update'
     echo 'Installs the HTTPS relay on port 8443 using systemd or Docker.'
     [[ ${1:-} == --help ]] && exit 0 || exit 2
 fi
@@ -37,7 +37,23 @@ if ! command -v python3 >/dev/null || ! command -v curl >/dev/null || ! command 
     apt-get update -qq
     apt-get install -y -qq python3 python3-venv curl tar openssl ca-certificates
 fi
-server_ip=$(python3 -c 'import ipaddress,sys; assert sys.version_info >= (3,10), "Python 3.10+ required"; print(ipaddress.IPv4Address(sys.argv[1]))' "$1")
+# Keep the existing advertised address on reinstalls; discover it only once.
+server_ip=${1:-}
+if [[ -z $server_ip && -f /etc/claude-proxy/client.json ]]; then
+    server_ip=$(python3 -c 'import json,urllib.parse; print(urllib.parse.urlsplit(json.load(open("/etc/claude-proxy/client.json"))["relay"]).hostname)')
+fi
+if [[ -z $server_ip ]]; then
+    echo 'Detecting public IPv4…'
+    for endpoint in https://api.ipify.org https://checkip.amazonaws.com; do
+        candidate=$(curl -4 --fail --silent --show-error --connect-timeout 5 --max-time 10 "$endpoint") || continue
+        if server_ip=$(python3 -c 'import ipaddress,sys; ip=ipaddress.IPv4Address(sys.argv[1].strip()); assert ip.is_global; print(ip)' "$candidate" 2>/dev/null); then
+            break
+        fi
+        server_ip=
+    done
+    [[ -n $server_ip ]] || { echo 'Could not detect public IPv4. Retry: bash server.sh YOUR_PUBLIC_IPV4' >&2; exit 1; }
+fi
+server_ip=$(python3 -c 'import ipaddress,sys; assert sys.version_info >= (3,10), "Python 3.10+ required"; print(ipaddress.IPv4Address(sys.argv[1]))' "$server_ip")
 umask 077
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
