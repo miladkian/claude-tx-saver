@@ -18,23 +18,38 @@ and lets Claude continue as normal.
 
 ### Install a prebuilt release
 
-Release artifacts are published for Linux x86_64 and macOS Apple Silicon. The
-`claude-tx-saver` binary provides both `server` and `client` modes; the shell
-installers below configure TLS, credentials, and Claude Code settings around it.
+Release artifacts are published for Linux x86_64 and macOS Apple Silicon. The `claude-tx-saver` binary provides both `server` and `client` modes. The
+commands below use only the release binary and standard system tools.
 
 **1. On your Linux VPS, as root:**
 
 ```sh
 curl -fsSL https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/claude-tx-saver-linux-x86_64.tar.gz | tar xz
 install -m 755 claude-tx-saver /usr/local/bin/claude-tx-saver
+install -d -m 700 /etc/claude-proxy
+openssl rand -hex 32 > /etc/claude-proxy/token
+openssl req -x509 -newkey rsa:3072 -nodes -days 365 \
+  -keyout /etc/claude-proxy/relay.key -out /etc/claude-proxy/relay.crt \
+  -subj '/CN=claude-tx-saver' -addext "subjectAltName=IP:YOUR_VPS_IP"
+chmod 600 /etc/claude-proxy/token /etc/claude-proxy/relay.key
+claude-tx-saver server --port 8443 --token-file /etc/claude-proxy/token \
+  --cert /etc/claude-proxy/relay.crt --key /etc/claude-proxy/relay.key
 ```
 
-The server detects its public IPv4, creates a self-signed certificate, and prints
-the next command. No domain, certificate purchase, or TLS setup is needed.
+Run the server under systemd or another supervisor for automatic restart. No
+domain or certificate purchase is needed.
 
 **2. On your Mac or Linux machine:**
 
-Use the release binary on the client and start it with `client --relay https://YOUR_VPS_IP:8443/v1/relay --token-file TOKEN --relay-ca relay.crt --port 8787`. Configure Claude Code to use `http://127.0.0.1:8787`.
+Copy the VPS token and certificate to the client through a trusted channel, then
+start the local relay:
+
+```sh
+claude-tx-saver client --relay https://YOUR_VPS_IP:8443/v1/relay \
+  --token-file ./token --relay-ca ./relay.crt --port 8787
+```
+
+Configure Claude Code to use `http://127.0.0.1:8787`.
 
 The client uses authenticated HTTPS; there is no SSH tunnel. Restart any Claude Code session that was already open.
 
@@ -82,8 +97,9 @@ Anthropic billing do not change.
 
 [Full report](benchmarks/results/REPORT.md) · [Methodology and reproduction](benchmarks/README.md)
 
-The benchmark harness is intentionally retained so Rust releases can be compared
-with the protocol baseline. Use `cargo bench` or the workload tools in your own benchmark harness for local and live scenarios.
+The benchmark notes are retained so Rust releases can be compared with the
+protocol baseline. Use `cargo bench` or an external harness with identical
+fixtures for local and live scenarios.
 
 ## Updates and removal
 
@@ -95,9 +111,10 @@ restore Claude Code's previous base URL from its settings.
 
 Your VPS can read the full context and Anthropic authentication headers. Use a
 server you trust. Credentials live outside this checkout in
-`~/.config/claude-proxy/` and `/etc/claude-proxy/`. Requests are buffered; responses
-stream. HTTP and SSE are supported. WebSockets, trailers, and streaming request
-uploads are outside scope. See [SECURITY.md](SECURITY.md).
+`~/.config/claude-proxy/` and `/etc/claude-proxy/`. HTTP and SSE payloads are
+preserved, but this release buffers complete request and response bodies.
+WebSockets, trailers, and streaming request uploads are outside scope. See
+[SECURITY.md](SECURITY.md).
 
 [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
 
