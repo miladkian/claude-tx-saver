@@ -1,34 +1,28 @@
-# Claude TX Saver 📦
+# Claude TX Saver
 
-[![Tests](https://github.com/mohsenyz/claude-tx-saver/actions/workflows/test.yml/badge.svg)](https://github.com/mohsenyz/claude-tx-saver/actions/workflows/test.yml)
-[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<p align="center"><strong>Stop uploading the same Claude Code context on every turn.</strong></p>
+<p align="center"><a href="https://github.com/mohsenyz/claude-tx-saver/actions/workflows/test.yml"><img src="https://github.com/mohsenyz/claude-tx-saver/actions/workflows/test.yml/badge.svg" alt="CI"></a> <a href="https://github.com/mohsenyz/claude-tx-saver/releases"><img src="https://img.shields.io/github/v/release/mohsenyz/claude-tx-saver?sort=semver" alt="Latest release"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a></p>
 
-**Your conversation grew by one sentence. Why upload the whole novel again?**
+Claude Code resends its growing conversation. On a slow or metered connection,
+that means paying to upload the same context again and again. Claude TX Saver
+sends changed chunks over an encrypted link to a VPS, rebuilds the exact request,
+and lets Claude continue as normal.
 
-Claude Code keeps sending the full conversation as it grows, eating upload
-bandwidth on every turn. The goal: **send the changes, save your connection**,
-and leave Claude's behavior alone.
+<p align="center"><img src="docs/architecture.svg" alt="Claude TX Saver architecture" width="900"></p>
 
-Two proxies, content-defined chunks, and Zstandard. Claude Code talks normally;
-your VPS rebuilds the exact request and forwards it to Anthropic.
+## Quick start
 
-```text
-First turn:   [100k tokens of context] ── compressed ──▶ VPS remembers chunks
-Next turn:    [same context + “fix it”] ── just changes ▶ VPS rebuilds everything
-                                                      ↓
-                                                   Anthropic
-```
-
-## Two scripts. Done.
-
-**On your VPS** (Linux, as root):
+**1. On your Linux VPS, as root:**
 
 ```sh
 curl -fsSLO https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/server.sh
 bash server.sh
 ```
 
-**On your Mac or Linux machine** (with Claude Code + Python 3.10+ installed):
+The server detects its public IPv4, creates a self-signed certificate, and prints
+the next command. No domain, certificate purchase, or TLS setup is needed.
+
+**2. On your Mac or Linux machine:**
 
 ```sh
 curl -fsSLO https://github.com/mohsenyz/claude-tx-saver/releases/latest/download/client.sh
@@ -36,71 +30,80 @@ bash client.sh YOUR_VPS_IP
 claude
 ```
 
-Prefer containers? Add **`--docker`** on both machines:
+The client uses SSH once to copy the private relay credentials. Normal traffic
+then uses authenticated HTTPS; there is no SSH tunnel. Restart any Claude Code
+session that was already open.
+
+### Docker
+
+Use the same two commands with `--docker`:
 
 ```sh
-bash server.sh --docker   # VPS
-bash client.sh --docker YOUR_VPS_IP   # your machine
+bash server.sh --docker
+bash client.sh --docker YOUR_VPS_IP
 ```
 
-Scripts download a pinned release, install dependencies, and start background
-services. No clone, pip commands, or hand-edited config. Review the downloaded
-scripts before running. Docker mode builds the included [Dockerfile](Dockerfile);
-it needs a running Docker daemon, plus Python for setup.
+Docker mode needs a running Docker daemon. The client is published only on
+`127.0.0.1:8787`; the server publishes HTTPS on port `8443`. Allow TCP 8443 in
+your VPS/cloud firewall.
 
-The server detects its public IPv4 and prints the client command. Override detection
-with `bash server.sh YOUR_VPS_IP` if needed (for example, behind NAT).
-**No domain, certificate purchase, or TLS configuration.** The scripts generate
-and trust a self-signed certificate automatically.
-Use a public **IPv4** address, working `root@IP` SSH access, and allow **TCP 8443**
-in your cloud firewall. Native mode uses systemd on the VPS and a LaunchAgent /
-systemd user service locally. SSH copies credentials during setup; **traffic uses
-certificate-verified HTTPS, never an SSH tunnel**. Your Claude login stays intact.
-Restart already-open Claude sessions after setup.
+## What changes on the wire?
 
-## Does it work?
+```text
+first turn:  [full context] ── compressed chunks ──▶ VPS cache
+next turn:   [same context + “fix it”] ── changed chunks ──▶ VPS rebuilds full request
+                                                              └─▶ Anthropic
+```
 
-Yes, for bandwidth. Speed has a plot twist.
+Anthropic receives the original request. The proxy does not understand or rewrite
+models, tools, thinking blocks, authentication formats, headers, or SSE events.
 
-| 100k-context request | Full upload | Delta + Zstd | Saved |
+## Measured result
+
+Real Claude Code calls with **100,126 context tokens**:
+
+<p align="center"><img src="docs/bandwidth.svg" alt="298.5 KB full request versus 8.85 KB delta request" width="780"></p>
+
+| Scenario | Full upload | Delta + Zstd | Reduction |
 |---|---:|---:|---:|
-| Actual Claude Code | 298.5 KB | 8.85 KB | **97.04%** |
-| Identical request | 291 KB | 1.19 KB | **99.59%** |
+| Live Claude Code | 298.5 KB | 8.85 KB | **97.04%** |
+| Identical context | 291 KB | 1.19 KB | **99.59%** |
 | Small appended turn | 295 KB | 7.14 KB | **97.58%** |
 
-**Compression alone was faster on our link:** 211 ms versus 231 ms with delta
-for an identical request. Delta saved far more bytes but spent ~48 ms scanning
-chunks. Live first-token medians were 1.753 s full / 1.878 s delta: **no proven
-latency win**. A cold cache sends all chunks; cache loss adds a round trip.
+Delta saves the bandwidth. Compression alone was faster on the tested link
+(211 ms versus 231 ms for an identical request), because scanning the context costs
+about 48 ms. Live first-token timing showed no reliable speedup. Input tokens and
+Anthropic billing do not change.
 
-Measured with **100,126 actual context tokens**, 252 controlled measurements and
-12 live Haiku calls. KB = 1,000 bytes. Upload savings only; Anthropic still gets
-the full context, so **token bills do not shrink**.
-[Results, methodology & raw data](benchmarks/results/REPORT.md) · [Reproduce](benchmarks/README.md)
+[Full report](benchmarks/results/REPORT.md) · [Methodology and reproduction](benchmarks/README.md)
 
-## The small print, actually small
+## Updates and removal
 
-- Your VPS sees context and Anthropic credentials. Use a server you trust.
-- Only the base URL changes. Bodies, headers, errors and SSE stay opaque.
-- Native client listens on loopback; Docker publishes only `127.0.0.1:8787`.
-- Credentials: `~/.config/claude-proxy/` and `/etc/claude-proxy/`. TLS expires in
-  365 days; renew and redistribute the certificate before then.
-- Supports HTTP + SSE. Buffers requests, streams responses. No WebSocket support.
-
-Uninstall locally: **`bash client.sh --uninstall`**. It restores your old Claude
-base URL. To stop the server: `systemctl disable --now claude-proxy`, or
-`docker rm -f claude-tx-saver-server`. Credentials are kept.
-
-## Updates without the ceremony
+Both scripts remember the server address, credentials, install mode, and Claude
+settings. Update the server first, then the client:
 
 ```sh
-claude-tx-server --update                 # VPS, as root; run this first
-~/.local/bin/claude-tx-client --update     # your machine
+claude-tx-server --update
+~/.local/bin/claude-tx-client --update
 ```
 
-Fetches the latest release and remembers your server IP, native/Docker mode,
-credentials, and Claude settings. Update both ends together; active sessions
-may briefly disconnect. Client updates need the same SSH access as setup.
+Remove the local service and restore the previous Claude URL:
 
-[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT](LICENSE)
+```sh
+bash client.sh --uninstall
+```
+
+Stop the server with `systemctl disable --now claude-proxy` or
+`docker rm -f claude-tx-saver-server`.
+
+## Trust boundary
+
+Your VPS can read the full context and Anthropic authentication headers. Use a
+server you trust. Credentials live outside this checkout in
+`~/.config/claude-proxy/` and `/etc/claude-proxy/`. Requests are buffered; responses
+stream. HTTP and SSE are supported. WebSockets, trailers, and streaming request
+uploads are outside scope. See [SECURITY.md](SECURITY.md).
+
+[Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
+
 Independent project; not affiliated with Anthropic.
